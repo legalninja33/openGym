@@ -4,8 +4,8 @@ import { t } from './i18n.js'
 
 // The shipped dataset plus the handful of exercises it doesn't cover (see exercises-extra.js).
 export const EXDB = [...DATASET, ...EXTRA]
-// The library subtitle counts animations, and only the dataset entries ship with one.
-export const ANIMATED_COUNT = DATASET.length
+// The library subtitle counts animations, so count the entries that actually have one.
+export const ANIMATED_COUNT = EXDB.filter(e => e.gif).length
 export const EXIDX = {}
 EXDB.forEach(e => { EXIDX[e.id] = e })
 export const BODYPARTS = [...new Set(EXDB.map(e => e.bp))].sort()
@@ -35,8 +35,11 @@ export const allExercises = st => [...(st.customEx || []), ...EXDB]
 // shipping ~140 MB of images into the deployment.
 const IMG_BASE = import.meta.env.VITE_IMG_BASE || 'img/'
 const GIF_BASE = import.meta.env.VITE_GIF_BASE || 'gif/'
-export const imgSrc = ex => IMG_BASE + ex.img
-export const gifSrc = ex => GIF_BASE + ex.gif
+// A bare dataset filename is resolved against those bases. A value that already carries a
+// folder ('extra/9001.gif') is left alone: the media volumes are mounted over img/ and gif/,
+// so anything shipped in the build itself has to be served from a path outside them.
+export const imgSrc = ex => (ex.img.includes('/') ? ex.img : IMG_BASE + ex.img)
+export const gifSrc = ex => (ex.gif.includes('/') ? ex.gif : GIF_BASE + ex.gif)
 
 // Cardio exercises log time + speed instead of weight × reps.
 export const isCardio = idOrEx => (typeof idOrEx === 'string' ? EXIDX[idOrEx] : idOrEx)?.bp === 'cardio'

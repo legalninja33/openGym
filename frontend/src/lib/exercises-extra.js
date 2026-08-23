@@ -16,11 +16,16 @@
 // would stay out of the library filters, so these live here instead, in the same shape as a
 // dataset row: every EXIDX lookup, filter chip and detail sheet treats them like any other.
 //
-// They deliberately carry no `img`/`gif`. The dataset's artwork shows the movements it
-// documents, and 0806's animation would be actively misleading here — it shows a standing
-// lean, not a prone press off a bench. Media already renders a missing animation as a blank
-// (components/Media.jsx). Everything else — body part, target, equipment, secondary
-// muscles, steps — is populated so the detail sheet looks complete.
+// The artwork is ours, not the dataset's: 0806's animation would be actively misleading
+// here, since it shows a standing lean rather than a prone press off a bench. `scripts/
+// gen-trx-media.py` draws both from joint coordinates in the dataset's own format (180x180,
+// 12 frames, white ground, held at each end position), so regenerating or adjusting a pose
+// is a script edit rather than a binary hand-off. They are schematic line figures and read
+// as such next to the dataset's rendered ones.
+//
+// The paths carry a folder because the compose file mounts the media volumes over `img/`
+// and `gif/`, which would shadow anything the build ships under those names — imgSrc and
+// gifSrc leave a path containing a slash alone.
 //
 // `eq` is 'body weight' rather than a new 'suspension trainer' value on purpose: it seeds
 // the bodyweight logging flag (isBodyweightEq), so a set asks for reps instead of a weight
@@ -35,6 +40,8 @@ export const EXTRA = [
     tg: 'pectorals',
     mg: 'triceps',
     sm: ['triceps', 'shoulders', 'abs'],
+    img: 'extra/9001.jpg',
+    gif: 'extra/9001.gif',
     st: [
       'Set the suspension straps so the handles hang about a hand\'s width above the floor, and place a bench behind you for your feet.',
       'Grip a handle in each hand at shoulder width and put your feet on the bench, so your body forms a straight line from head to heels.',
@@ -54,6 +61,8 @@ export const EXTRA = [
     tg: 'hamstrings',
     mg: 'glutes',
     sm: ['glutes', 'calves', 'abs'],
+    img: 'extra/9002.jpg',
+    gif: 'extra/9002.gif',
     st: [
       'Set the foot cradles of the suspension trainer about 30 cm above the floor.',
       'Lie on your back with your head away from the anchor, both heels in the cradles, legs straight and arms at your sides with the palms down.',
