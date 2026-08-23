@@ -1,7 +1,11 @@
-import { EXDB } from './exercises-data.js'
+import { EXDB as DATASET } from './exercises-data.js'
+import { EXTRA } from './exercises-extra.js'
 import { t } from './i18n.js'
 
-export { EXDB }
+// The shipped dataset plus the handful of exercises it doesn't cover (see exercises-extra.js).
+export const EXDB = [...DATASET, ...EXTRA]
+// The library subtitle counts animations, and only the dataset entries ship with one.
+export const ANIMATED_COUNT = DATASET.length
 export const EXIDX = {}
 EXDB.forEach(e => { EXIDX[e.id] = e })
 export const BODYPARTS = [...new Set(EXDB.map(e => e.bp))].sort()
