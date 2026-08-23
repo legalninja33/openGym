@@ -1,14 +1,26 @@
 // Exercises the shipped dataset doesn't cover.
 //
-// hasaneyldrm/exercises-dataset has no suspension-trainer entries at all, so a TRX owner
-// has to fall back on custom exercises — which carry a free-text description but no
-// numbered "How to" steps. These fill that gap in the same shape as a dataset row, so
-// every EXIDX lookup, filter chip and detail sheet treats them like any other exercise.
+// hasaneyldrm/exercises-dataset does carry five suspension-trainer entries, all with
+// animations: 0805 suspended abdominal fallout, 0806 suspended push-up, 0807 suspended
+// reverse crunch, 0808 suspended row and 0809 suspended split squat. Prefer those where
+// they fit — they are better documented and they animate.
 //
-// They deliberately carry no `img`/`gif`: there is no artwork for them, and Media already
-// renders a missing animation as a blank (components/Media.jsx). Everything else — body
-// part, target, equipment, secondary muscles, steps — is populated so the detail sheet
-// looks complete.
+// The two below are the gaps that list leaves:
+//   * 0806 is the standing variant (feet walked forward, body leaning into the handles).
+//     It is not the prone, feet-elevated press, which sits in a decline position and so
+//     biases the clavicular head — a different exercise, not a cue away from 0806.
+//   * There is no suspended leg curl anywhere in the dataset; the closest entries are the
+//     inverse/Nordic curls (0496, 0696, 0697), which are a knee-extension-side movement.
+//
+// A custom exercise would carry a free-text description but no numbered "How to" steps and
+// would stay out of the library filters, so these live here instead, in the same shape as a
+// dataset row: every EXIDX lookup, filter chip and detail sheet treats them like any other.
+//
+// They deliberately carry no `img`/`gif`. The dataset's artwork shows the movements it
+// documents, and 0806's animation would be actively misleading here — it shows a standing
+// lean, not a prone press off a bench. Media already renders a missing animation as a blank
+// (components/Media.jsx). Everything else — body part, target, equipment, secondary
+// muscles, steps — is populated so the detail sheet looks complete.
 //
 // `eq` is 'body weight' rather than a new 'suspension trainer' value on purpose: it seeds
 // the bodyweight logging flag (isBodyweightEq), so a set asks for reps instead of a weight
