@@ -36,8 +36,9 @@ export const allExercises = st => [...(st.customEx || []), ...EXDB]
 const IMG_BASE = import.meta.env.VITE_IMG_BASE || 'img/'
 const GIF_BASE = import.meta.env.VITE_GIF_BASE || 'gif/'
 // A bare dataset filename is resolved against those bases. A value that already carries a
-// folder ('extra/9001.gif') is left alone: the media volumes are mounted over img/ and gif/,
-// so anything shipped in the build itself has to be served from a path outside them.
+// folder is left alone — that is how exercises-extra.js ships its own artwork, as a URL the
+// bundler emits ('./assets/9001-<hash>.gif'). It has to sit outside img/ and gif/ because
+// the compose file mounts the media volumes over both.
 export const imgSrc = ex => (ex.img.includes('/') ? ex.img : IMG_BASE + ex.img)
 export const gifSrc = ex => (ex.gif.includes('/') ? ex.gif : GIF_BASE + ex.gif)
 

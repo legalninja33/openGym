@@ -17,19 +17,31 @@
 // dataset row: every EXIDX lookup, filter chip and detail sheet treats them like any other.
 //
 // The artwork is ours, not the dataset's: 0806's animation would be actively misleading
-// here, since it shows a standing lean rather than a prone press off a bench. `scripts/
-// gen-trx-media.py` draws both from joint coordinates in the dataset's own format (180x180,
-// 12 frames, white ground, held at each end position), so regenerating or adjusting a pose
-// is a script edit rather than a binary hand-off. They are schematic line figures and read
-// as such next to the dataset's rendered ones.
+// here, since it shows a standing lean rather than a prone press off a bench.
+// `scripts/render-trx-media.py` poses a mannequin from joint coordinates and renders it in
+// Blender with Freestyle outlines; `scripts/build-trx-gif.py` assembles the frames in the
+// dataset's own format (180x180, 12 frames, white ground, held at each end position). A
+// pose is therefore a script edit rather than a binary hand-off.
 //
-// The paths carry a folder because the compose file mounts the media volumes over `img/`
-// and `gif/`, which would shadow anything the build ships under those names — imgSrc and
-// gifSrc leave a path containing a slash alone.
+// They are clean mannequins: no musculature, and none of the red target-muscle highlighting
+// the dataset's anatomical figures carry. Closing that last gap needs a licensed anatomical
+// model, which is the reason these two were missing artwork in the first place.
+//
+// The media is imported rather than dropped in `public/` for two reasons. The compose file
+// mounts the media volumes over `img/` and `gif/`, so anything shipped under those names is
+// shadowed; and nginx caches images for 30 days, which is safe for the dataset because its
+// filenames carry a content hash but would pin a stale copy of a file whose name never
+// changes. Importing hands both problems to the bundler: it emits `assets/9001-<hash>.gif`,
+// so editing a pose changes the URL. imgSrc/gifSrc leave a path containing a slash alone.
 //
 // `eq` is 'body weight' rather than a new 'suspension trainer' value on purpose: it seeds
 // the bodyweight logging flag (isBodyweightEq), so a set asks for reps instead of a weight
 // nobody was going to enter. Added load still works — the flag lives on the config.
+
+import pushupGif from '../assets/trx/9001.gif'
+import pushupImg from '../assets/trx/9001.jpg'
+import legcurlGif from '../assets/trx/9002.gif'
+import legcurlImg from '../assets/trx/9002.jpg'
 
 export const EXTRA = [
   {
@@ -40,8 +52,8 @@ export const EXTRA = [
     tg: 'pectorals',
     mg: 'triceps',
     sm: ['triceps', 'shoulders', 'abs'],
-    img: 'extra/9001.jpg',
-    gif: 'extra/9001.gif',
+    img: pushupImg,
+    gif: pushupGif,
     st: [
       'Set the suspension straps so the handles hang about a hand\'s width above the floor, and place a bench behind you for your feet.',
       'Grip a handle in each hand at shoulder width and put your feet on the bench, so your body forms a straight line from head to heels.',
@@ -61,8 +73,8 @@ export const EXTRA = [
     tg: 'hamstrings',
     mg: 'glutes',
     sm: ['glutes', 'calves', 'abs'],
-    img: 'extra/9002.jpg',
-    gif: 'extra/9002.gif',
+    img: legcurlImg,
+    gif: legcurlGif,
     st: [
       'Set the foot cradles of the suspension trainer about 30 cm above the floor.',
       'Lie on your back with your head away from the anchor, both heels in the cradles, legs straight and arms at your sides with the palms down.',
