@@ -19,6 +19,7 @@ The scene deliberately carries no floor and no anchor bar — the dataset isolat
 on white, and the extra geometry only competed with the movement at 180 px.
 """
 import bpy
+import bmesh
 import math
 import os
 import sys
@@ -35,6 +36,17 @@ BAR_Z = 2.25                    # straps run up to here and leave the frame
 SKIN = (0.80, 0.80, 0.80)
 GEAR = (0.38, 0.38, 0.38)
 PROP = (0.90, 0.90, 0.90)
+TARGET = (0.86, 0.42, 0.36)     # the salmon the dataset marks the worked muscle in
+
+# Which faces of the body carry that mark, tested in the mesh's own rest coordinates:
+# standing, +Z up, front at -Y. Facing is checked as well as position, so the band wraps the
+# front of the chest without bleeding through to the back.
+MUSCLE = {
+    "pectorals": lambda c, n: (1.17 < c.z < 1.38 and c.y < 0.02 and abs(c.x) < 0.23
+                               and n.y < 0.15),
+    "hamstrings": lambda c, n: (0.50 < c.z < 0.88 and c.y > -0.06 and 0.02 < abs(c.x) < 0.26
+                                and n.y > -0.15),
+}
 
 
 def ease(t):
@@ -88,12 +100,34 @@ def cylinder(p1, p2, r, material):
     return o
 
 
-def spawn_human(skin, location, euler):
+def mark_muscle(obj, muscle):
+    """Give the worked muscle its own material, selected by region rather than by anatomy.
+
+    MPFB2's mesh has no per-muscle vertex groups, and the openly licensed anatomical models
+    are reference geometry rather than something riggable — but the dataset's mark is a
+    coloured patch of skin, so a region test over the faces reproduces it.
+    """
+    test = MUSCLE[muscle]
+    me = obj.data
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bm.faces.ensure_lookup_table()
+    for f in bm.faces:
+        if test(f.calc_center_median(), f.normal):
+            f.material_index = 1
+    bm.to_mesh(me)
+    bm.free()
+
+
+def spawn_human(skin, location, euler, muscle=None):
     """A fresh MPFB2 human, rigged, hung off an empty so the whole body can be placed."""
     bpy.ops.mpfb.create_human()
     human = bpy.data.objects["Human"]
     human.data.materials.clear()
     human.data.materials.append(skin)
+    human.data.materials.append(flat("target", TARGET))
+    if muscle:
+        mark_muscle(human, muscle)
     bpy.context.view_layer.objects.active = human
     human.select_set(True)
     bpy.ops.mpfb.add_standard_rig()
@@ -136,7 +170,7 @@ def build_pushup(t, skin, gear, prop):
     cube((PU_FOOT_X - 0.28, 0, PU_BENCH_TOP / 2), (0.62, 0.7, PU_BENCH_TOP), prop)
     inc = math.radians(PU_INCLINE[0] + (PU_INCLINE[1] - PU_INCLINE[0]) * t)
     rig = spawn_human(skin, (PU_FOOT_X, 0.0, PU_BENCH_TOP),
-                      (math.radians(90), math.radians(90) + inc, 0))
+                      (math.radians(90), math.radians(90) + inc, 0), muscle="pectorals")
     for side, dy in (("L", 0.30), ("R", -0.30)):
         e = empty(f"hand.{side}", PU_HAND + Vector((0, dy, 0)))
         ik(rig, f"lowerarm02.{side}", e)
@@ -155,7 +189,7 @@ LC_CAM = dict(az=26.0, elev=20.0, dist=6.0, target=(0.2, 0.30), ortho=1.95, pitc
 
 def build_legcurl(t, skin, gear, prop):
     rig = spawn_human(skin, (-0.62, 0.0, 0.10),
-                      (math.radians(-90), math.radians(90), 0))
+                      (math.radians(-90), math.radians(90), 0), muscle="hamstrings")
     bend = math.radians(LC_BRIDGE[0] + (LC_BRIDGE[1] - LC_BRIDGE[0]) * t)
     for name in LC_SPINE:
         pb = rig.pose.bones.get(name)
