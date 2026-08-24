@@ -18,14 +18,16 @@
 //
 // The artwork is ours, not the dataset's: 0806's animation would be actively misleading
 // here, since it shows a standing lean rather than a prone press off a bench.
-// `scripts/render-trx-media.py` poses a mannequin from joint coordinates and renders it in
-// Blender with Freestyle outlines; `scripts/build-trx-gif.py` assembles the frames in the
-// dataset's own format (180x180, 12 frames, white ground, held at each end position). A
-// pose is therefore a script edit rather than a binary hand-off.
+// `scripts/render-trx-media.py` generates a rigged human with MPFB2 (CC0), poses it through
+// IK and renders it in Blender with Freestyle outlines; `scripts/build-trx-gif.py` assembles
+// the frames in the dataset's own format (180x180, 12 frames, white ground, held at each end
+// position). Posing is physical rather than keyframed — the push-up pivots the body about
+// the feet with the hands fixed on the handles, so the elbow bend falls out of the solver —
+// which means adjusting a rep is a script edit rather than a binary hand-off.
 //
-// They are clean mannequins: no musculature, and none of the red target-muscle highlighting
-// the dataset's anatomical figures carry. Closing that last gap needs a licensed anatomical
-// model, which is the reason these two were missing artwork in the first place.
+// What they still lack next to the dataset's figures is musculature and the red target-muscle
+// highlighting: that needs an anatomical model, and the openly licensed ones (Z-Anatomy,
+// BodyParts3D) are reference geometry rather than something riggable.
 //
 // The media is imported rather than dropped in `public/` for two reasons. The compose file
 // mounts the media volumes over `img/` and `gif/`, so anything shipped under those names is
