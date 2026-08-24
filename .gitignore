@@ -1,0 +1,15 @@
+# Local configuration — copy .env.example and fill it in.
+.env
+
+# Runtime state: profiles, passkeys, per-user data, session secret. Back it up, don't commit it.
+data/
+
+# Exercise media, downloaded on first `docker compose up` (~140 MB).
+media/
+
+# MPFB2 add-on used by scripts/render-trx-media.py — 43 MB, fetched from
+# https://extensions.blender.org/add-ons/mpfb/ rather than vendored.
+scripts/mpfb.zip
+
+node_modules/
+.DS_Store
